@@ -53,9 +53,9 @@ pub struct Cell {
 }
 
 impl Cell {
-    fn random(dimmensions: usize, rng: &mut ThreadRng) -> Cell {
-        let current_row: usize = rng.gen_range(0, dimmensions);
-        let current_col: usize = rng.gen_range(0, dimmensions);
+    fn random(dimensions: usize, rng: &mut ThreadRng) -> Cell {
+        let current_row: usize = rng.gen_range(0, dimensions);
+        let current_col: usize = rng.gen_range(0, dimensions);
 
         return Cell { x: current_row, y: current_col}
     }
@@ -70,12 +70,12 @@ impl Cell {
         };
     }
 
-    fn on_edge(&self, direction: Direction, dimmensions: usize) -> bool {
+    fn on_edge(&self, direction: Direction, dimensions: usize) -> bool {
         use Direction::*;
         match direction {
             Up    => self.y == 0,
-            Right => self.x == dimmensions - 1,
-            Down  => self.y == dimmensions - 1,
+            Right => self.x == dimensions - 1,
+            Down  => self.y == dimensions - 1,
             Left  => self.x == 0
         }
     }
@@ -83,12 +83,12 @@ impl Cell {
 
 pub type Map = Vec<Vec<MapCell>>;
 
-fn create_map(cell: MapCell, dimmensions: usize) -> Map {
+fn create_map(cell: MapCell, dimensions: usize) -> Map {
     let mut map: Map = vec![];
 
-    for i in 0..(dimmensions) {
+    for i in 0..(dimensions) {
         map.push(vec![]);
-        for _ in 0..(dimmensions) {
+        for _ in 0..(dimensions) {
             map[i].push(cell.clone());
         }
     }
@@ -113,13 +113,13 @@ pub fn ascii_render_map(map: &Map) {
     }
 }
 
-pub fn generate_map(dimmensions: usize, max_tunnels: usize, max_len: usize) -> Map {
+pub fn generate_map(dimensions: usize, max_tunnels: usize, max_len: usize) -> Map {
     let mut tunnels_count: usize = 0;
     let mut rng = thread_rng(); // TODO: take as an argument?
-    let mut map = create_map(MapCell::Wall, dimmensions);
+    let mut map = create_map(MapCell::Wall, dimensions);
 
     // init for first iteration
-    let mut current_cell: Cell = Cell::random(dimmensions, &mut rng);
+    let mut current_cell: Cell = Cell::random(dimensions, &mut rng);
     let mut last_direction: Option<Direction> = None;
     let mut current_direction: Direction;
 
@@ -138,7 +138,7 @@ pub fn generate_map(dimmensions: usize, max_tunnels: usize, max_len: usize) -> M
 
         while tunnel_length < random_length {
             // break the loop if its going out of the map
-            if current_cell.on_edge(current_direction.clone(), dimmensions) {
+            if current_cell.on_edge(current_direction.clone(), dimensions) {
                 break;
             }
 

@@ -3,7 +3,7 @@ extern crate random_walk;
 use clap::{Arg, App, ArgMatches};
 
 fn main() {
-    let mut dimmensions: usize = 20;
+    let mut dimensions: usize = 20;
     let mut tunnels_count: usize = 50;
     let mut max_tunnel_length: usize = 8;
 
@@ -11,8 +11,8 @@ fn main() {
         .version("0.1.0")
         .author("Marek Fajkus <marek.faj@gmail.com>")
         .about("Random ASCII dungeon generator")
-        .arg(Arg::with_name("dimmensions")
-             .long("dimmensions")
+        .arg(Arg::with_name("dimensions")
+             .long("dimensions")
              .short("d")
              .default_value("20")
              .value_name("natural number")
@@ -34,9 +34,9 @@ fn main() {
         )
         .get_matches();
 
-    matches.value_of("dimmensions")
+    matches.value_of("dimensions")
         .and_then(|v| v.parse::<usize>().map_or_else(|_| None, |x| Some(x)))
-        .map(|v| dimmensions = v);
+        .map(|v| dimensions = v);
 
     matches.value_of("tunnels")
         .and_then(|v| v.parse::<usize>().map_or_else(|_| None, |x| Some(x)))
@@ -46,5 +46,5 @@ fn main() {
         .and_then(|v| v.parse::<usize>().map_or_else(|_| None, |x| Some(x)))
         .map(|v| max_tunnel_length = v);
 
-    random_walk::ascii_render_map(&random_walk::generate_map(dimmensions, tunnels_count, max_tunnel_length));
+    random_walk::ascii_render_map(&random_walk::generate_map(dimensions, tunnels_count, max_tunnel_length));
 }
