@@ -1,11 +1,13 @@
 extern crate random_walk;
 
 use clap::{Arg, App, ArgMatches};
+use rand::{thread_rng};
 
 fn main() {
     let mut dimensions: usize = 20;
     let mut tunnels_count: usize = 50;
     let mut max_tunnel_length: usize = 8;
+    let mut rng = thread_rng();
 
     let matches: ArgMatches = App::new("Random Walk Dungeon")
         .version("0.1.0")
@@ -46,5 +48,5 @@ fn main() {
         .and_then(|v| v.parse::<usize>().map_or_else(|_| None, |x| Some(x)))
         .map(|v| max_tunnel_length = v);
 
-    random_walk::ascii_render_map(&random_walk::generate_map(dimensions, tunnels_count, max_tunnel_length));
+    random_walk::ascii_render_map(&random_walk::generate_map(&mut rng, dimensions, tunnels_count, max_tunnel_length));
 }

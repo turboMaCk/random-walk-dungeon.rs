@@ -1,5 +1,4 @@
-use rand::{thread_rng, Rng};
-use rand::rngs::{ThreadRng};
+use rand::{Rng};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MapCell {
@@ -26,7 +25,7 @@ pub enum Direction {
 }
 
 impl Direction {
-    fn random(rng: &mut ThreadRng) -> Direction {
+    fn random<T: Rng + 'static>(rng: &mut T) -> Direction {
         use Direction::*;
         match rng.gen_range(0, 4) {
             0 => Up,
@@ -53,7 +52,7 @@ pub struct Cell {
 }
 
 impl Cell {
-    fn random(dimensions: usize, rng: &mut ThreadRng) -> Cell {
+    fn random<T: Rng + 'static>(dimensions: usize, rng: &mut T) -> Cell {
         let current_row: usize = rng.gen_range(0, dimensions);
         let current_col: usize = rng.gen_range(0, dimensions);
 
@@ -113,20 +112,19 @@ pub fn ascii_render_map(map: &Map) {
     }
 }
 
-pub fn generate_map(dimensions: usize, max_tunnels: usize, max_len: usize) -> Map {
+pub fn generate_map<T: Rng + 'static>(rng: &mut T, dimensions: usize, max_tunnels: usize, max_len: usize) -> Map {
     let mut tunnels_count: usize = 0;
-    let mut rng = thread_rng(); // TODO: take as an argument?
     let mut map = create_map(MapCell::Wall, dimensions);
 
     // init for first iteration
-    let mut current_cell: Cell = Cell::random(dimensions, &mut rng);
+    let mut current_cell: Cell = Cell::random(dimensions, rng);
     let mut last_direction: Option<Direction> = None;
     let mut current_direction: Direction;
 
     while tunnels_count < max_tunnels {
         // Generate direction
         loop {
-            current_direction = Direction::random(&mut rng);
+            current_direction = Direction::random(rng);
 
             if Some(current_direction.normalize_dir()) != last_direction.clone().map(|x| x.normalize_dir()) {
                 break;
