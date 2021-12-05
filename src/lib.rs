@@ -1,8 +1,7 @@
-use rand::Rng;
-
 pub mod map;
 
 use map::*;
+use rand::Rng;
 
 pub fn generate_map<T: Rng + 'static>(
     rng: &mut T,
