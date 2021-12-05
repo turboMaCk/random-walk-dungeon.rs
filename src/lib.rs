@@ -1,9 +1,9 @@
-use rand::{Rng};
+use rand::Rng;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MapCell {
     Wall,
-    Floor
+    Floor,
 }
 
 impl MapCell {
@@ -11,7 +11,7 @@ impl MapCell {
         use MapCell::*;
         match &self {
             Wall => "#".to_string(),
-            Floor => " ".to_string()
+            Floor => " ".to_string(),
         }
     }
 }
@@ -21,26 +21,26 @@ pub enum Direction {
     Up,
     Right,
     Down,
-    Left
+    Left,
 }
 
 impl Direction {
     fn random<T: Rng + 'static>(rng: &mut T) -> Direction {
         use Direction::*;
-        match rng.gen_range(0, 4) {
+        match rng.gen_range(0..4) {
             0 => Up,
             1 => Right,
             2 => Down,
-            _ => Left
+            _ => Left,
         }
     }
 
     fn normalize_dir(&self) -> Direction {
         use Direction::*;
         match self {
-            Down  => Up,
-            Left  => Right,
-            other => other.clone()
+            Down => Up,
+            Left => Right,
+            other => other.clone(),
         }
     }
 }
@@ -48,15 +48,18 @@ impl Direction {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Cell {
     x: usize,
-    y: usize
+    y: usize,
 }
 
 impl Cell {
     fn random<T: Rng + 'static>(dimensions: usize, rng: &mut T) -> Cell {
-        let current_row: usize = rng.gen_range(0, dimensions);
-        let current_col: usize = rng.gen_range(0, dimensions);
+        let current_row: usize = rng.gen_range(0..dimensions);
+        let current_col: usize = rng.gen_range(0..dimensions);
 
-        return Cell { x: current_row, y: current_col}
+        return Cell {
+            x: current_row,
+            y: current_col,
+        };
     }
 
     fn step(&mut self, direction: Direction) {
@@ -65,17 +68,17 @@ impl Cell {
             Up => self.y -= 1,
             Right => self.x += 1,
             Down => self.y += 1,
-            Left => self.x -= 1
+            Left => self.x -= 1,
         };
     }
 
     fn on_edge(&self, direction: Direction, dimensions: usize) -> bool {
         use Direction::*;
         match direction {
-            Up    => self.y == 0,
+            Up => self.y == 0,
             Right => self.x == dimensions - 1,
-            Down  => self.y == dimensions - 1,
-            Left  => self.x == 0
+            Down => self.y == dimensions - 1,
+            Left => self.x == 0,
         }
     }
 }
@@ -112,7 +115,12 @@ pub fn ascii_render_map(map: &Map) {
     }
 }
 
-pub fn generate_map<T: Rng + 'static>(rng: &mut T, dimensions: usize, max_tunnels: usize, max_len: usize) -> Map {
+pub fn generate_map<T: Rng + 'static>(
+    rng: &mut T,
+    dimensions: usize,
+    max_tunnels: usize,
+    max_len: usize,
+) -> Map {
     let mut tunnels_count: usize = 0;
     let mut map = create_map(MapCell::Wall, dimensions);
 
@@ -126,12 +134,14 @@ pub fn generate_map<T: Rng + 'static>(rng: &mut T, dimensions: usize, max_tunnel
         loop {
             current_direction = Direction::random(rng);
 
-            if Some(current_direction.normalize_dir()) != last_direction.clone().map(|x| x.normalize_dir()) {
+            if Some(current_direction.normalize_dir())
+                != last_direction.clone().map(|x| x.normalize_dir())
+            {
                 break;
             }
         }
 
-        let random_length = rng.gen_range(0, max_len);
+        let random_length = rng.gen_range(0..max_len);
         let mut tunnel_length = 0;
 
         while tunnel_length < random_length {
