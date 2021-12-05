@@ -63,10 +63,13 @@ fn main() {
         .and_then(|v| res_to_opt(v.parse::<usize>()))
         .map(|v| max_tunnel_length = v);
 
-    random_walk::ascii_render_map(&random_walk::generate_map(
+    use random_walk::map::Map;
+    let map: Map = random_walk::generate_map(
         &mut rng,
         dimensions,
         tunnels_count,
         max_tunnel_length,
-    ));
+    );
+
+    println!("{}", map.ascii_render());
 }
