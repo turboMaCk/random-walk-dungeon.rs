@@ -11,15 +11,19 @@ fn to_hex_string(bytes: Vec<u8>) -> String {
 }
 
 fn from_hex_string(str: &str) -> Option<[u8; 32]> {
-    if str.len() < 64 {
+    if str.len() != 2 * 32 {
         return None;
     }
 
     let mut res = [0; 32];
     for i in 0..32 {
-        match u8::from_str_radix(&str[i..i + 2], 16) {
+        let j = i * 2;
+        match u8::from_str_radix(&str[j..j + 2], 16) {
             Ok(v) => res[i] = v,
-            _ => return None,
+            _ => {
+                println!("err");
+                return None;
+            }
         }
     }
 
